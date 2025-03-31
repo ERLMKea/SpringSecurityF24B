@@ -16,10 +16,13 @@ public class ProjectSecurityConfig {
 
     @Bean
     SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
-        http.authorizeHttpRequests((requests) -> {
-            requests.requestMatchers("/myAccount","/myBalance").authenticated()
-                    .requestMatchers("/contact").permitAll();
-        });
+        http.csrf(csrfConfig -> csrfConfig.disable())
+                .authorizeHttpRequests((requests) -> { requests
+                        //.requestMatchers("/myAccount","/myBalance").authenticated()
+                        //.requestMatchers(("/myAccount").hasRole("ADMIN")
+                        .requestMatchers("/myAccount","/myBalance").hasRole("USER")
+                        .requestMatchers("/contact", "/register").permitAll();
+                });
         http.formLogin(Customizer.withDefaults());
         http.httpBasic(Customizer.withDefaults());
         DefaultSecurityFilterChain obj = http.build();
@@ -30,7 +33,7 @@ public class ProjectSecurityConfig {
     public PasswordEncoder passwordEncoder() {
         //var obj = PasswordEncoderFactories.createDelegatingPasswordEncoder();
         //return obj;
-        return new BCryptPasswordEncoder(20);
+        return new BCryptPasswordEncoder(10);
         //return NoOpPasswordEncoder.getInstance();
     }
 
